@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fff1f6">
+<title>Anamika the Chat Bot — A Little Space for Your Heart</title>
+<style>
+:root{--pink:#c04483;--plum:#80516f;--lav:#8c75c9;--ink:#493747;--glass:rgba(255,255,255,.88)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif;color:var(--ink);background:linear-gradient(135deg,rgba(255,239,247,.88),rgba(255,247,226,.78)),url('https://images.unsplash.com/photo-1511985223024-2f8b4b6b6e7b?auto=format&fit=crop&w=1800&q=85') center/cover fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 10% 10%,#f8c7df88,transparent 28%),radial-gradient(circle at 90% 85%,#cfc4ff88,transparent 30%)}
+.wrap{position:relative;max-width:900px;margin:auto;padding:24px 16px 38px}
+.hero{text-align:center;padding:26px 18px 20px;border-radius:28px;background:var(--glass);backdrop-filter:blur(10px);box-shadow:0 12px 45px #9b527b20}
+.pill{display:inline-block;border-radius:99px;padding:7px 12px;background:#ffe1ef;color:#a83272;font-size:.83rem;font-weight:700}
+h1{font-size:clamp(2rem,6vw,3.5rem);line-height:1.08;margin:14px 0 10px;letter-spacing:-.04em;background:linear-gradient(90deg,#d34f91,#8d69cf,#ed9b58);color:transparent;background-clip:text}
+.sub{max-width:620px;margin:auto;line-height:1.6;color:#76576e}
+.stickers{font-size:1.6rem;letter-spacing:.3rem;margin-top:13px}
+.chat{margin:20px auto 0;max-width:760px;background:var(--glass);backdrop-filter:blur(10px);border:1px solid #ffffffc9;border-radius:24px;overflow:hidden;box-shadow:0 12px 45px #9b527b20}
+.chathead{padding:16px 20px;background:linear-gradient(90deg,#ffe2f0,#f1e9ff);display:flex;align-items:center;gap:12px}
+.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:white;font-size:1.5rem;box-shadow:0 4px 12px #c0448320}
+.chathead strong{display:block;color:#9e3b77}.online{font-size:.8rem;color:#846780}
+.messages{height:min(49vh,460px);min-height:280px;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:13px;scroll-behavior:smooth}
+.msg{max-width:88%;padding:13px 15px;border-radius:18px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{align-self:flex-start;background:#fff0f7;border:1px solid #f6d4e5;border-bottom-left-radius:5px}
+.user{align-self:flex-end;background:#eee8ff;border:1px solid #ddd2ff;border-bottom-right-radius:5px}
+.sticker{font-size:2.4rem;display:block;margin-top:5px}
+.composer{border-top:1px solid #f0dce9;padding:13px;display:flex;gap:10px;background:#ffffffbd}
+input{flex:1;min-width:0;border:1px solid #e9cddd;border-radius:15px;padding:13px 14px;font:inherit;outline:none;background:white}
+input:focus{border-color:#c04483;box-shadow:0 0 0 3px #c044831a}
+button{border:0;border-radius:15px;padding:0 18px;font:inherit;font-weight:700;color:white;background:linear-gradient(135deg,#d44d91,#9271d4);cursor:pointer}
+button:hover{filter:brightness(1.04)}button:focus-visible{outline:3px solid #7c5fc4;outline-offset:3px}
+.foot{text-align:center;color:#805f78;font-size:.86rem;line-height:1.6;padding:18px 10px}
+.foot a{color:#a83272}
+@media(max-width:520px){.wrap{padding:12px 10px 24px}.hero{padding:22px 14px}.messages{padding:13px}.msg{max-width:94%}.composer{padding:10px}.composer button{padding:0 14px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <span class="pill">🌷 A LITTLE SPACE FOR YOUR HEART 🌷</span>
+    <h1>Anamika the Chat Bot</h1>
+    <p class="sub">A gentle place to talk about your day, your favourite people, your memories, and whatever is on your mind. One question at a time, with no judgement.</p>
+    <div class="stickers" aria-label="heart, flower, rainbow, butterfly">💗 🌸 🌈 🦋 🌻</div>
+  </header>
+
+  <section class="chat" aria-label="Chat with Anamika">
+    <div class="chathead">
+      <div class="avatar">🧸</div>
+      <div><strong>Anamika</strong><div class="online">A friendly guided chat · one question at a time</div></div>
+    </div>
+    <div id="messages" class="messages" aria-live="polite">
+      <div class="msg bot">Hi there! 💗 I'm Anamika the Chat Bot. This is a gentle space to share what feels comfortable. We can talk about the people you care about, good memories, or anything that’s on your mind.
+
+Let’s start with one easy question:
+
+What would you like me to know about you first? 🌷</div>
+    </div>
+    <form id="form" class="composer">
+      <input id="reply" autocomplete="off" maxlength="1200" placeholder="Write what’s on your mind…" aria-label="Your message">
+      <button type="submit">Send 💌</button>
+    </form>
+  </section>
+
+  <footer class="foot">
+    You can skip any question. You deserve kindness and support. 💕<br>
+    This starter website uses a guided demo conversation; it is not connected to a live AI service yet.
+  </footer>
+</main>
+<script>
+const messages = document.getElementById('messages');
+const form = document.getElementById('form');
+const input = document.getElementById('reply');
+let step = 0;
+const prompts = [
+  "Thanks for sharing that with me. 💗 What is one childhood memory or little thing that still makes you smile?",
+  "That sounds meaningful. 🌷 Who is someone in your life who makes you feel understood or supported?",
+  "It’s okay to talk about the people who matter to you. 💕 What has your mood been like lately?",
+  "Thank you for being honest. 🫶 Is there something on your mind that has been especially difficult recently?",
+  "That sounds like a lot to carry. ❤️‍🩹 What do you wish someone understood about how you feel?",
+  "You don’t have to solve everything all at once. 🌱 What usually helps you feel even a little calmer or safer?",
+  "It’s okay to take things at your own pace. 💗 Is there one small thing you could do for yourself today?",
+  "You deserve care and support beyond this chat, too. 🌻 Is there someone you trust whom you could talk to if you needed support?",
+  "Thank you for sharing this conversation with me. 🧸 What is one kind thing you would like to remind yourself of today?",
+  "Before we wrap up, what is one hope you want to carry with you into the next few days? 💌"
+];
+function add(text, who, sticker=false){
+  const d=document.createElement('div'); d.className='msg '+who; d.textContent=text;
+  if(sticker){const s=document.createElement('span');s.className='sticker';s.textContent=sticker;d.appendChild(s)}
+  messages.appendChild(d); messages.scrollTop=messages.scrollHeight;
+}
+form.addEventListener('submit', e=>{
+  e.preventDefault();
+  const value=input.value.trim(); if(!value)return;
+  add(value,'user'); input.value='';
+  if(step < prompts.length){
+    const response = prompts[step];
+    const sticker = step===3 ? '🫂' : step===7 ? '🌈' : '';
+    window.setTimeout(()=>add(response,'bot',sticker),220);
+    step++;
+  } else {
+    window.setTimeout(()=>add("Thank you for talking with me. 💗 Remember: you don’t have to have everything figured out today. If you need more support, consider reaching out to someone you trust. 🌷",'bot','💖'),220);
+  }
+});
+</script>
+</body>
+</html>
